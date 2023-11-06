@@ -4,17 +4,15 @@
 void ofApp::setup(){
     
     ofSetFrameRate(60);
-    
     gui.setup();
-    gui.add(prob.set("probabilidad",0.001, 0, 0.05));
+    gui.add(prob.set("probabilidad",0.001, 0, 0.02));
     gui.add(bump.set("bump",0.2,0, 1.));
-    gui.add(tam.set("tamaño",1,0, 10));
-    
-    
-    
-    
+    gui.add(tam.set("tamano",1,0, 10));
+    gui.add(rescaleRes.set("rescale",6,1,50));
+    gui.add(vectorial.set("vectorial",1));
     
 	capture = false;
+    pausa = false;
     hifa temporal;
     temporal.setup();
     micelio.push_back(temporal);
@@ -25,11 +23,6 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
-         
-       
-	
-  
 }
 
 //--------------------------------------------------------------
@@ -37,53 +30,61 @@ void ofApp::draw(){
 
     ofBackground(0);
 	if(capture){
-		output.beginEPS("test.ps");
+		output.beginEPS("micelio_" + ofToString(micelio.size()) + "_" + ofGetTimestampString("%H-%M-%S") + ".ps");
 	}
     
    
-    for (int i=0;i<micelio.size();i++) {                    // loop por todas las hifas    micelio[0]
+    for (int i=0;i<micelio.size();i++) {                    // loop por todas las hifas
         micelio[i].bum = bump;
-        //micelio[i].x1 = mouseX/1920.-0.5;
-      //  micelio[i].y1 = mouseY/640.-0.5;
-        micelio[i].puntos.push_back(glm::vec3());           //agregamos un punto a la hifa micelio[0].puntos[0]
+        micelio[i].puntos.push_back(glm::vec3());           //agregamos un punto a la hifa
         int last = micelio[i].puntos.size()-1;              //last = último punto
         micelio[i].puntos[last].x=micelio[i].posicion.x;    //asigna cabeza de micelio[0] último punto x
         micelio[i].puntos[last].y=micelio[i].posicion.y;    //               ''                        y
         int numPts = micelio[i].puntos.size();              //numPts = cantidad de puntos micelio[0]
 
+       if (vectorial)   {
+        
         output.setColor(0xFFFFFF);
         output.noFill();
         output.setLineWidth(tam);
         output.beginShape();
-        
-        int rescaleRes = 6;
-        for(int j = 0; j < numPts; j++){
+           
+           for(int j = 0; j < numPts; j++){
+               if(j == 0 || j == numPts -1){
+                   output.curveVertex(micelio[i].puntos[j].x,micelio[i].puntos[j].y);
+               }
+               if(j % rescaleRes == 0) {
+                   output.curveVertex(micelio[i].puntos[j].x, micelio[i].puntos[j].y);
+                   }
+               }
+           output.endShape();
+           }
+
+       else {
+        ofSetHexColor(0xFFFFFF);
+        ofNoFill();
+        ofSetLineWidth(tam);
+        ofBeginShape();
        
-            if(j == 0 || j == numPts -1){
-                output.curveVertex(micelio[i].puntos[j].x,micelio[i].puntos[j].y);
-            }
-            if(j % rescaleRes == 0) output.curveVertex(micelio[i].puntos[j].x, micelio[i].puntos[j].y);
-        }
         
-        output.endShape();
+        for(int j = 0; j < numPts; j++){
+            if(j == 0 || j == numPts -1){
+                    ofCurveVertex(micelio[i].puntos[j].x,micelio[i].puntos[j].y);
+                }
+            if(j % rescaleRes == 0) {
+                ofCurveVertex(micelio[i].puntos[j].x, micelio[i].puntos[j].y);
+                }
+            }
+        ofEndShape();
+        }
         
         if (ofRandom(0,1)<prob) {
             micelio.push_back(micelio[i]);
         }
         
-        micelio[i].update();
+        if (!pausa) micelio[i].update();
     }
     
-    
-
-
-   
-   //  micelio.push_back(micelio[0]);
-    
- 
-
-    
-
 	if(capture){
 		output.endEPS();
 		capture =false;
@@ -94,10 +95,15 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-    int total= micelio.size();
-        for (int i=0;i<total;i++) {
-            micelio.push_back(micelio[i]);
-        }
+   
+    
+    if(key == 'd'){
+        int total= micelio.size();
+               for (int i=0;i<total;i++) {
+                   micelio.push_back(micelio[i]);
+               }
+    }
+    
     
 	if(key == ' '){
 		capture = true;
@@ -123,6 +129,34 @@ void ofApp::keyPressed(int key){
              micelio.push_back(temporal2);
     }
     
+    
+    if(key == '2') {
+          micelio.clear();
+          hifa temporal2;
+             temporal2.setup();
+             temporal2.posicion.x=mouseX;
+             temporal2.posicion.y=mouseY;
+             
+               micelio.push_back(temporal2);
+               micelio.push_back(temporal2);
+      }
+    
+    
+    if(key == '3') {
+          micelio.clear();
+          hifa temporal2;
+             temporal2.setup();
+             temporal2.posicion.x=mouseX;
+             temporal2.posicion.y=mouseY;
+             
+               micelio.push_back(temporal2);
+               micelio.push_back(temporal2);
+               micelio.push_back(temporal2);
+      }
+    
+    
+    
+    
     if(key == '4') {
         micelio.clear();
         hifa temporal2;
@@ -136,6 +170,10 @@ void ofApp::keyPressed(int key){
         micelio.push_back(temporal2);
         
     }
+    
+    if(key == 'p') {
+        pausa = !pausa;
+      }
 }
 
 //--------------------------------------------------------------

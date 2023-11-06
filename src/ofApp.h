@@ -27,10 +27,13 @@ class ofApp : public ofBaseApp{
 
 		ofxVectorGraphics output;
 		bool capture;
+    bool pausa;
 
         vector <hifa> micelio;
     ofxPanel gui;
     ofParameter<float> prob,tam,bump;
+    ofParameter<int> rescaleRes;
+    ofParameter<bool> vectorial;
 
 
 };
