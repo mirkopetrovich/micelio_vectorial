@@ -5,14 +5,18 @@ void ofApp::setup(){
     
     ofSetFrameRate(60);
     gui.setup();
-    gui.add(prob.set("probabilidad",0.001, 0, 0.02));
+    gui.add(prob1.set("probabilidad",0.001, 0, 0.02));
     gui.add(bump.set("bump",0.2,0, 1.));
-    gui.add(tam.set("tamano",1,0, 10));
+    gui.add(tam.set("tamano",1,1, 10));
     gui.add(rescaleRes.set("rescale",6,1,50));
     gui.add(vectorial.set("vectorial",1));
+    gui.add(multiplica.set("multiplica",0));
+    gui.add(prob2.set("probabilidad",0.01,0, 0.02));
+    
+    ofSetCircleResolution(50);
     
 	capture = false;
-    pausa = false;
+    pausa = true;
     hifa temporal;
     temporal.setup();
     micelio.push_back(temporal);
@@ -78,19 +82,43 @@ void ofApp::draw(){
         ofEndShape();
         }
         
-        if (ofRandom(0,1)<prob) {
-            micelio.push_back(micelio[i]);
-        }
         
-        if (!pausa) micelio[i].update();
+        if (!pausa) {
+        
+            
+      //  if micelio[i].posicion
+            
+            if (micelio[i].posicion.distance(ofVec2f(mouseX,mouseY))<scroll&&multiplica) {
+                probabilidad=prob2;
+            }
+            else {
+                probabilidad=prob1;
+            }
+            
+            
+        if (ofRandom(0,1)<probabilidad) micelio.push_back(micelio[i]);
+            
+            micelio[i].update();
+        
+     
+            
+            
+            
+        
+        }
     }
+    
     
 	if(capture){
 		output.endEPS();
 		capture =false;
 	}
     gui.draw();
-}
+    ofSetHexColor(0x00FFFF);
+    ofDrawCircle(mouseX, mouseY, scroll);
+    //ofDrawBitmapString(scroll,mouseX,mouseY);
+    
+    }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
@@ -120,7 +148,7 @@ void ofApp::keyPressed(int key){
     }
     
     if(key == '1') {
-        micelio.clear();
+      
         hifa temporal2;
            temporal2.setup();
            temporal2.posicion.x=mouseX;
@@ -131,7 +159,7 @@ void ofApp::keyPressed(int key){
     
     
     if(key == '2') {
-          micelio.clear();
+         
           hifa temporal2;
              temporal2.setup();
              temporal2.posicion.x=mouseX;
@@ -143,7 +171,7 @@ void ofApp::keyPressed(int key){
     
     
     if(key == '3') {
-          micelio.clear();
+        
           hifa temporal2;
              temporal2.setup();
              temporal2.posicion.x=mouseX;
@@ -158,7 +186,7 @@ void ofApp::keyPressed(int key){
     
     
     if(key == '4') {
-        micelio.clear();
+       
         hifa temporal2;
            temporal2.setup();
            temporal2.posicion.x=mouseX;
@@ -270,4 +298,11 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+void ofApp::mouseScrolled(int x, int y, float scrollX, float scrollY ) {
+
+    scroll += scrollY;
+    if (scroll<0) scroll=0;
+    
 }

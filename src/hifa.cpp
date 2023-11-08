@@ -23,7 +23,7 @@ void hifa::setup() {
 }
 
 void hifa::update() {
-    posicion += velocidad;
+    posicion += velocidad;  
     ofVec2f bump;
     bump.set(x1+ofRandom(-x2,x2),ofRandom(-y2,y2)+y1);
     bump *= bum;

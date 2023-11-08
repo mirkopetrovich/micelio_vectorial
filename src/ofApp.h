@@ -23,7 +23,8 @@ class ofApp : public ofBaseApp{
 		void mouseExited(int x, int y);
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);		
+		void gotMessage(ofMessage msg);
+        void mouseScrolled(int x, int y, float scrollX, float scrollY );
 
 		ofxVectorGraphics output;
 		bool capture;
@@ -31,9 +32,11 @@ class ofApp : public ofBaseApp{
 
         vector <hifa> micelio;
     ofxPanel gui;
-    ofParameter<float> prob,tam,bump;
+    ofParameter<float> prob1,prob2,tam,bump;
     ofParameter<int> rescaleRes;
-    ofParameter<bool> vectorial;
+    ofParameter<bool> vectorial,multiplica;
+    
+    float scroll, probabilidad;
 
 
 };
